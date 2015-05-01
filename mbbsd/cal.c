@@ -564,7 +564,7 @@ p_sysinfo(void)
            Cdatelite(&start_time),
 	   build_time);
     if (*build_remote) {
-      prints("½sÄ¶ª©¥»: %s %s %s\n", build_remote, build_origin, build_hash);
+      prints("½sÄ¶ª©¥»: %s %s %s dfmod\n", build_remote, build_origin, build_hash);
     }
 
 #ifdef REPORT_PIAIP_MODULES

@@ -717,10 +717,14 @@ load_current_user(const char *uid)
 
 #ifdef STR_GUEST
     if (!is_admin_only && strcasecmp(uid, STR_GUEST) == 0) {
-	if (initcuser(STR_GUEST)< 1) exit (0) ;
+	/*if (initcuser(STR_GUEST)< 1) exit (0) ;
 	pwcuInitGuestPerm();
 	// can we prevent mkuserdir() here?
-	mkuserdir(cuser.userid);
+	mkuserdir(cuser.userid);*/
+
+        sleep(1);
+        vmsg("抱歉，guest 帳號已停用。");
+        exit(0);
     } else
 #endif
 
@@ -798,7 +802,7 @@ login_query(char *ruid)
 	prints("current pid: %d ", getpid());
 #endif
 
-	if (getdata(20, 0, "請輸入代號，或以 guest 參觀，或以 new 註冊: ",
+	if (getdata(20, 0, "請輸入代號，或以 new 註冊: ",
 		uid, sizeof(uid), DOECHO) < 1)
 	{
 	    // got nothing
@@ -1004,6 +1008,37 @@ inline static void welcome_msg(void)
     pressanykey();
 }
 
+static int count_pending_accounts(void *data, int num, userec_t *uentp)
+{
+    int *count = (int*) data;
+    (void)num;
+
+    if(uentp == NULL) return 0;
+
+    if(bad_user_id(uentp->userid)) return 0;
+
+    register int level = uentp->userlevel;
+
+    if(!(level & (PERM_LOGINOK))) {
+        (*count)++;
+    }
+
+    return 0;
+}
+
+void check_pending_accounts(void)
+{
+    int count = 0;
+    passwd_apply(&count, count_pending_accounts);
+    if(count > 0) {
+        move(0, 0);
+        clrtobot();
+        move(b_lines - 3, 0);
+        prints(ANSI_RESET "【注意】目前有 " ANSI_COLOR(1;33) "%d" ANSI_RESET " 個待審核帳號，請儘速處理！" ANSI_CLRTOEND "\n", count);
+        pressanykey();
+    }
+}
+
 inline static void check_bad_login(void)
 {
     char            genbuf[200];
@@ -1199,6 +1234,10 @@ user_login(void)
 	clrtobot();
 	welcome_msg();
 
+    if(HasUserPerm(PERM_SYSOP)) {
+        check_pending_accounts();
+    }
+
 	append_log_recent_login();
 	check_bad_login();
 #ifdef USE_CHECK_BAD_CLIENTS
@@ -1253,7 +1292,7 @@ user_login(void)
     } else {
 	// XXX no userlevel, no guest - what is this?
 	clear();
-	outs("抱歉，您的帳號資料異常或已被停權。\n");
+	outs("抱歉，您的帳號尚未通過審核，或是資料異常，或已被停權。\n");
 	pressanykey();
 	exit(1);
     }

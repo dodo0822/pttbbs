@@ -90,27 +90,7 @@ bad_user_id(const char *userid)
 static char *
 isvalidname(char *rname)
 {
-#ifdef FOREIGN_REG
-    (void)rname;
     return NULL;
-#else
-    const char    *rejectstr[] =
-	{"肥", "胖", "豬頭", "小白", "小明", "路人", "老王", "老李", "寶貝",
-	 "先生", "帥哥", "老頭", "小姊", "小姐", "美女", "小妹", "大頭",
-	 "公主", "同學", "寶寶", "公子", "大頭", "小小", "小弟", "小妹",
-	 "妹妹", "嘿", "嗯", "爺爺", "大哥", "無",
-	 NULL};
-    if( strip_blank(rname, rname) && IS_DBCSLEAD(rname[0]) &&
-	strlen(rname) >= 4 &&
-	!HaveRejectStr(rname, rejectstr) &&
-	strncmp(rname, "小", 2) != 0   && //起頭是「小」
-	strncmp(rname, "我是", 4) != 0 && //起頭是「我是」
-	!(strlen(rname) == 4 && strncmp(&rname[2], "兒", 2) == 0) &&
-	!(strlen(rname) >= 4 && strncmp(&rname[0], &rname[2], 2) == 0))
-	return NULL;
-    return "您的輸入似乎不正確";
-#endif
-
 }
 
 static char *
@@ -602,12 +582,12 @@ new_register(void)
 #ifdef DBCSAWARE
     newuser.uflag |= UF_DBCS_AWARE | UF_DBCS_DROP_REPEAT;
 #endif
-
+/*
 #ifdef UF_ADBANNER_USONG
     if (query_adbanner_usong_pref_changed(&newuser, 0))
 	newuser.uflag |= UF_ADBANNER_USONG;
 #endif
-
+*/
 
     more("etc/register", NA);
     try = 0;
@@ -718,7 +698,7 @@ new_register(void)
     }
 
     try = 0;
-    while (strlen(newuser.address) < 8)
+    while (strlen(newuser.group_name) < 1)
     {
 	// do not use isvalidaddr to check,
 	// because that requires foreign info.
@@ -726,11 +706,11 @@ new_register(void)
 	    vmsg(MSG_ERR_MAXTRIES);
 	    exit(1);
 	}
-	getdata(21, 0, "聯絡地址：", newuser.address,
-		sizeof(newuser.address), DOECHO);
+	getdata(21, 0, "組別（請填XX組）：", newuser.group_name,
+		sizeof(newuser.group_name), DOECHO);
     }
 
-    try = 0;
+    /*try = 0;
     do {
         char ans[3];
 	if (++try > 10) {
@@ -748,7 +728,9 @@ new_register(void)
             break;
         }
         bell();
-    } while (1);
+    } while (1);*/
+
+    newuser.over_18 = 1;
 
 #ifdef REGISTER_VERIFY_CAPTCHA
     if (!verify_captcha("為了繼續您的註冊程序\n"))
@@ -792,6 +774,11 @@ new_register(void)
         system(buf);
     }
 #endif
+
+    sleep(1);
+    vmsg("註冊完成！請等候審核，謝謝。");
+    exit(0);
+
 }
 
 int

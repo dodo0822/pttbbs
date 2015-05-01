@@ -327,7 +327,7 @@ void
 adbanner(int menu_index)
 {
     int i = menu_index;
-
+    /*
     // don't show if stat in class or user wants to skip adbanners
     if (currstat == CLASS || !(HasUserFlag(UF_ADBANNER)))
 	return;
@@ -373,17 +373,17 @@ adbanner(int menu_index)
     i %= MAX_ADBANNER;
 
     move(1, 0);
-    clrtoln(1 + FILMROW);	/* 清掉上次的 */
+    clrtoln(1 + FILMROW);	 清掉上次的 
 #ifdef LARGETERM_CENTER_MENU
-    out_lines(SHM->notes[i], 11, (t_columns - 80)/2);	/* 只印11行就好 */
+    out_lines(SHM->notes[i], 11, (t_columns - 80)/2);	/* 只印11行就好 *
 #else
-    out_lines(SHM->notes[i], 11, 0);	/* 只印11行就好 */
+    out_lines(SHM->notes[i], 11, 0);	/* 只印11行就好 *
 #endif
     outs(ANSI_RESET);
 #ifdef DEBUG
     // XXX piaip test
     move(FILMROW, 0); prints(" [ %d ] ", i);
-#endif
+#endif*/
 }
 
 static int

@@ -130,7 +130,9 @@ typedef struct userec_t {
     time4_t	timeremovebadpost;/* 上次刪除劣文時間 */
     time4_t	timeviolatelaw;  /* 被開罰單時間 */
 
-    char	pad_tail[28];
+    char	group_name[8];
+
+    char	pad_tail[20];
 } PACKSTRUCT userec_t;
 
 #ifndef NO_CONST_CUSER

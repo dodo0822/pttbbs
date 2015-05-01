@@ -234,6 +234,8 @@ user_display(const userec_t * u, int adminmode)
 	outc('\n');
     }
 
+    prints("\t組別名稱: %s\n", u->group_name);
+
     // conditional fields
 #ifdef ASSESS
     prints("\t退文數目: %u\n", (unsigned int)u->badpost);
@@ -758,6 +760,8 @@ uinfo_query(const char *orig_uid, int adminmode, int unum)
 			x.address, sizeof(x.address), DOECHO);
 	    getdata_buf(y++, 0, "學歷職業：", x.career,
 		    sizeof(x.career), DOECHO);
+        getdata_buf(y++, 0, "組別：",
+            x.group_name, sizeof(x.group_name), DOECHO);
 	}
 
         do {
@@ -1469,7 +1473,7 @@ u_list_CB(void *data, int num, userec_t * uentp)
     if (uentp == NULL) {
 	move(2, 0);
 	clrtoeol();
-	prints(ANSI_REVERSE "  使用者代號   %-25s   上站  文章  %s  "
+	prints(ANSI_REVERSE "  使用者代號   %-19s  組別   上站  文章  %s  "
 	       "最近光臨日期     " ANSI_RESET "\n",
 	       "綽號暱稱",
 	       HasUserPerm(PERM_SEEULEVELS) ? "等級" : "");
@@ -1479,7 +1483,7 @@ u_list_CB(void *data, int num, userec_t * uentp)
     if (bad_user_id(uentp->userid))
 	return 0;
 
-    if ((uentp->userlevel & ~(ctx->u_list_special)) == 0)
+    if (((uentp->userlevel & ~(ctx->u_list_special)) == 0) && !HasUserPerm(PERM_SEEULEVELS))
 	return 0;
 
     if (ctx->y == b_lines) {
@@ -1520,9 +1524,10 @@ u_list_CB(void *data, int num, userec_t * uentp)
 
     ptr = (char *)Cdate(&uentp->lastlogin);
     ptr[18] = '\0';
-    prints("%-14s %-27.27s%5d %5d  %s  %s\n",
+    prints("%-14s %-21.21s%-6s %5d %5d  %s  %s\n",
 	   uentp->userid,
 	   uentp->nickname,
+       uentp->group_name,
 	   uentp->numlogindays, uentp->numposts,
 	   HasUserPerm(PERM_SEEULEVELS) ? permstr : "", ptr);
     ctx->usercounter++;
