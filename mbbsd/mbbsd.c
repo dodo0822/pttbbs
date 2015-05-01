@@ -802,6 +802,17 @@ login_query(char *ruid)
 	prints("current pid: %d ", getpid());
 #endif
 
+    // Print system status
+    FILE *pfp;
+    char stat_output[100];
+    pfp = popen("/usr/bin/uptime", "r");
+    if (pfp != NULL) {
+        fgets(stat_output, sizeof(stat_output), pfp);
+        move(19, 0);
+        prints("系統狀態：%s", stat_output);
+        pclose(pfp);
+    }
+
 	if (getdata(20, 0, "請輸入代號，或以 new 註冊: ",
 		uid, sizeof(uid), DOECHO) < 1)
 	{
