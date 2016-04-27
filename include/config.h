@@ -12,6 +12,11 @@
 /////////////////////////////////////////////////////////////////////////////
 // System Name Configuration 系統名稱設定
 
+/* Disable guest user */
+#ifdef  DISABLE_GUEST
+#undef	DISABLE_GUEST
+#endif
+
 /* 系統名(郵件用)，建議別超過 3 個字元。 詳見 sample/pttbbs.conf */
 #ifndef BBSMNAME
 #define BBSMNAME        "Ptt"
