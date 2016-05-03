@@ -717,18 +717,14 @@ load_current_user(const char *uid)
 
 #ifdef STR_GUEST
     if (!is_admin_only && strcasecmp(uid, STR_GUEST) == 0) {
-#ifndef DISABLE_GUEST
-    	if (initcuser(STR_GUEST)< 1) exit (0) ;
-    	pwcuInitGuestPerm();
-    	// can we prevent mkuserdir() here?
-    	mkuserdir(cuser.userid);
-#endif
-#ifdef  DISABLE_GUEST
+	/*if (initcuser(STR_GUEST)< 1) exit (0) ;
+	pwcuInitGuestPerm();
+	// can we prevent mkuserdir() here?
+	mkuserdir(cuser.userid);*/
 
         sleep(1);
         vmsg("©êºp¡Aguest ±b¸¹¤w°±¥Î¡C");
         exit(0);
-#endif
     } else
 #endif
 
